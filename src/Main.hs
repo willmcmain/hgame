@@ -5,6 +5,24 @@ import qualified Data.Map as Map
 
 type KeyMap = Map.Map Keycode Bool
 
+{----- Draw Stuf -----}
+skyColor = V4 0 185 185 255
+groundColor = V4 0 150 0 255
+playerColor = V4 255 255 255 255
+
+player = Rectangle (P $ V2 100 420) (V2 50 80)
+ground = Rectangle (P $ V2 0 500) (V2 800 100)
+
+render :: Renderer -> IO ()
+render renderer = do
+    rendererDrawColor renderer $= skyColor
+    clear renderer
+    rendererDrawColor renderer $= playerColor
+    fillRect renderer (Just player)
+    rendererDrawColor renderer $= groundColor
+    fillRect renderer (Just ground)
+    present renderer
+
 {----- SDL Window -----}
 windowConfig = defaultWindow {-
     windowMode = FullscreenDesktop
@@ -21,9 +39,7 @@ appLoop :: Renderer -> KeyMap -> IO ()
 appLoop renderer input = do
     events <- pollEvents
     let newInput = processInput input events
-    rendererDrawColor renderer $= V4 0 0 255 255
-    clear renderer
-    present renderer
+    render renderer
     if (isKeyDown KeycodeQ newInput) || isQuit events
         then return ()
         else appLoop renderer newInput
